@@ -5,11 +5,9 @@ import messageRouter from "./routes/messageRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { app, server } from "./socket/socket.js";
 dotenv.config();
-const url =
-  "mongodb+srv://vegamvasanth11:Vasanth123@blog.yo6ajvk.mongodb.net/chat?retryWrites=true&w=majority&appName=blog";
-
-const app = express();
+const url = process.env.MONGO_URL;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -21,7 +19,7 @@ app.use("/api/users", userRouter);
 mongoose
   .connect(url)
   .then(() => {
-    app.listen(3000, () => {
+    server.listen(3000, () => {
       console.log("app is running successfully");
     });
   })

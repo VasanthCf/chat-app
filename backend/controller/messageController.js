@@ -1,9 +1,11 @@
 import Conversation from "../model/conversationModel.js";
 import Message from "../model/messageModel.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 export const sendMessage = async (req, res) => {
   try {
     const { message } = req.body;
+
     const { id: receiverId } = req.params;
 
     const senderId = req.user._id;
@@ -30,6 +32,12 @@ export const sendMessage = async (req, res) => {
 
     await conversation.save();
 
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      //SEND MESSAGE TO SPECIFIC CLIENT
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
     res.status(201).json(newMessage);
   } catch (err) {
     console.log(err);
@@ -48,6 +56,7 @@ export const getMessage = async (req, res) => {
 
     if (!conversation) return res.status(200).json([]);
     const messages = conversation.messages;
+
     res.status(200).json(messages);
   } catch (err) {
     console.log(err);

@@ -2,14 +2,16 @@ import User from "../model/userModel.js";
 import jwt from "jsonwebtoken";
 const protectRoute = async (req, res, next) => {
   try {
-    const tokenCookie = req.headers.cookie;
-    const token = tokenCookie?.split("=")[1];
-    console.log(token);
+    // const tokenCookie = req.headers.cookie;
+    // const token = tokenCookie?.split("=")[1];
+    // console.log(token);
+
+    const token = req.cookies.jwt;
     if (!token) {
       return res.send(401).json({ error: "Unauthorized User" });
     }
 
-    const decoded = jwt.verify(token, "secret");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!decoded) {
       return res.send(401).json({ error: "Unauthorized Invalid token" });
