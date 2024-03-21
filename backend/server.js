@@ -6,6 +6,7 @@ import userRouter from "./routes/userRoutes.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { app, server } from "./socket/socket.js";
+import path from "path";
 dotenv.config();
 const url = process.env.MONGO_URL;
 
@@ -15,11 +16,18 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/message", messageRouter);
 app.use("/api/users", userRouter);
+const port = process.env.PORT || 5000;
 
+const __dirname = path.resolve();
+
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+});
 mongoose
   .connect(url)
   .then(() => {
-    server.listen(3000, () => {
+    server.listen(port, () => {
       console.log("app is running successfully");
     });
   })
