@@ -4,6 +4,15 @@ import useSendMessage from "../../hooks/useSendMessage";
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  console.log(isTyping);
+  const handleFocus = () => {
+    setIsTyping(true);
+  };
+
+  const handleBlur = () => {
+    setIsTyping(false);
+  };
 
   const { loading, sendMessage } = useSendMessage();
   const handleSubmit = async (e) => {
@@ -22,6 +31,8 @@ const MessageInput = () => {
           placeholder="Send a message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
         <button
           type="submit"
