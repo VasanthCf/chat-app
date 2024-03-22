@@ -1,11 +1,29 @@
 import { useState } from "react";
 import { BsSend } from "react-icons/bs";
 import useSendMessage from "../../hooks/useSendMessage";
-
+import { useSocketContext } from "./../../context/SocketContext";
+import useListenTyping from "./../../hooks/useListenTyping";
+import useConversation from "../../zustand/useConversation";
 const MessageInput = () => {
   const [message, setMessage] = useState("");
 
   const { loading, sendMessage } = useSendMessage();
+  const { socket } = useSocketContext();
+  const { selectedConversation } = useConversation();
+  useListenTyping();
+  const handleFocus = () => {
+    socket.emit("sendTyping", {
+      isTyping: true,
+      receiverId: selectedConversation._id,
+    });
+  };
+
+  const handleBlur = () => {
+    socket.emit("sendTyping", {
+      isTyping: false,
+      receiverId: selectedConversation._id,
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message) return;
@@ -22,6 +40,8 @@ const MessageInput = () => {
           placeholder="Send a message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
         <button
           type="submit"

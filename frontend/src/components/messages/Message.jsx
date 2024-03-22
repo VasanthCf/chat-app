@@ -16,17 +16,17 @@ function Message({ message }) {
   const bubbleBgColor = fromMe
     ? "bg-gradient-to-b from-purple-500 bg-violet-500"
     : "bg-blue-500";
-  const shakeClass = message.shouldShake ? "wiggle" : "";
+  const shakeClass = message.shouldShake ? "shake" : "";
   return (
-    <div className={` chat ${chatClassName}`}>
+    <div className={`sm:text-base text-sm chat ${chatClassName}`}>
       <div className="chat-image avatar">
-        <div className="w-10 rounded-full">
+        <div className="w-8 rounded-full">
           {" "}
           <img src={profilePic} />
         </div>
       </div>
       <div
-        className={`chat-bubble text-white pb-2 break-all  ${bubbleBgColor} ${shakeClass}`}
+        className={`chat-bubble min-h-[0.7rem] text-white pb-2 break-all  ${bubbleBgColor} ${shakeClass}`}
       >
         {message.message}
       </div>
