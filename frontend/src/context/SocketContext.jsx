@@ -8,29 +8,45 @@ export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const { authUser } = useAuthContext();
+
   useEffect(() => {
     if (authUser) {
-      const socket = io("https://talkmore-ykn9.onrender.com", {
+      const socket = io({
         query: {
           userId: authUser._id,
         },
       });
-
+      console.log(socket);
       setSocket(socket);
       socket.on("getOnlineUsers", (users) => {
         console.log(users);
         setOnlineUsers(users);
       });
-      return () => socket.close();
-    } else {
-      if (socket) {
+
+      socket.emit("check", "hello server", (response) => {
+        console.log(response);
+      });
+      return () => {
+        console.log("socket disconnected");
         socket.close();
-        setSocket(null);
-      }
+      };
     }
+    //else {
+    //   if (socket) {
+    //     setSocket(null);
+    //   }
+    // }
   }, [authUser]);
+  // socket?.on("check", (data) => {
+  //   console.log(data);
+  // });
+  const emitCustomEvent = (eventName, eventData) => {
+    if (socket) {
+      socket.emit(eventName, eventData);
+    }
+  };
   return (
-    <SocketContext.Provider value={{ socket, onlineUsers }}>
+    <SocketContext.Provider value={{ socket, onlineUsers, emitCustomEvent }}>
       {children}
     </SocketContext.Provider>
   );

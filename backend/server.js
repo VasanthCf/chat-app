@@ -28,7 +28,7 @@ mongoose
   .connect(url)
   .then(() => {
     server.listen(port, () => {
-      console.log("app is running successfully");
+      console.log(`app is running successfully ${port} `);
     });
   })
   .catch((err) => {

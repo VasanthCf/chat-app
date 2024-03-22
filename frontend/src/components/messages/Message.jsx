@@ -18,15 +18,15 @@ function Message({ message }) {
     : "bg-blue-500";
   const shakeClass = message.shouldShake ? "wiggle" : "";
   return (
-    <div className={` chat ${chatClassName}`}>
+    <div className={`sm:text-base text-sm chat ${chatClassName}`}>
       <div className="chat-image avatar">
-        <div className="w-10 rounded-full">
+        <div className="w-8 rounded-full">
           {" "}
           <img src={profilePic} />
         </div>
       </div>
       <div
-        className={`chat-bubble text-white pb-2 break-all  ${bubbleBgColor} ${shakeClass}`}
+        className={`chat-bubble min-h-[0.7rem] py-[0.3rem] text-white  break-all  ${bubbleBgColor} ${shakeClass}`}
       >
         {message.message}
       </div>

@@ -1,17 +1,27 @@
 import { useState } from "react";
 import { BsSend } from "react-icons/bs";
 import useSendMessage from "../../hooks/useSendMessage";
+import useConversation from "../../zustand/useConversation";
+import { useSocketContext } from "../../context/SocketContext";
+import useListenTyping from "../../hooks/useListenTyping";
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  console.log(isTyping);
+  const { selectedConversation } = useConversation();
+  const { socket } = useSocketContext();
+  useListenTyping();
   const handleFocus = () => {
-    setIsTyping(true);
+    socket.emit("sendTyping", {
+      isTyping: true,
+      receiverId: selectedConversation._id,
+    });
   };
 
   const handleBlur = () => {
-    setIsTyping(false);
+    socket.emit("sendTyping", {
+      isTyping: false,
+      receiverId: selectedConversation._id,
+    });
   };
 
   const { loading, sendMessage } = useSendMessage();
