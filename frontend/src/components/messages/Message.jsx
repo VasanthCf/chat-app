@@ -26,11 +26,16 @@ function Message({ message }) {
         </div>
       </div>
       <div
-        className={`chat-bubble min-h-[0.7rem] text-white pb-2 break-all  ${bubbleBgColor} ${shakeClass}`}
+        className={`chat-bubble min-h-0.5 ${
+          !fromMe ? "top-3" : ""
+        } text-white break-all  leading-snug py-[6px] ${bubbleBgColor} ${shakeClass}`}
       >
         {message.message}
       </div>
-      <div className="chat-footer opacity-50 text-xs flex gap-1 items-center text-white">
+      <div
+        className={`chat-footer opacity-50 
+          text-xs  text-white`}
+      >
         {formattedTime}
       </div>
     </div>

@@ -11,7 +11,7 @@ const MessageContainer = () => {
   // useEffect(() => {
   //   return () => setSelectedConversation(null);
   // }, [setSelectedConversation]);
-
+  const profilePic = selectedConversation?.profilePic || "";
   return (
     <div className="md:min-w-[450px] w-full overflow-y-auto flex flex-col">
       {!selectedConversation ? (
@@ -20,15 +20,18 @@ const MessageContainer = () => {
         <>
           {/* Header */}
 
-          <div className="bg-slate-500 flex items-center gap-2 justify-start px-4 py-2 mb-0">
+          <div className="bg-slate-800 flex items-center gap-2 justify-start px-4 py-2 mb-0">
             <span
-              className="bg-violet-600 p-2 text-lg text-white rounded-full"
+              className="p-2 text-lg text-white rounded-full cursor-pointer"
               onClick={() => setIsMobile(false)}
             >
               <FaArrowLeft />
             </span>
-            <span className="label-text text-lg">To:</span>{" "}
-            <span className="text-gray-900 text-lg font-bold">
+            <div className="w-8 rounded-full cursor-pointer">
+              {" "}
+              <img src={profilePic} />
+            </div>
+            <span className="text-white text-lg  font-pacific leading-loose">
               {selectedConversation.fullName}
             </span>
           </div>
