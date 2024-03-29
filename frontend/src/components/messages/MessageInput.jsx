@@ -50,13 +50,13 @@ const MessageInput = () => {
   return (
     <form
       className={` pb-2 my-0 w-full ${
-        reply
+        !reply === ""
           ? "backdrop-blur-md sm:bg-gray-500/70 bg-gray-500/30  backdrop-filter bg-opacity-0"
           : " bg-transparent"
       } `}
       onSubmit={handleSubmit}
     >
-      {reply && (
+      {!reply === "" && (
         <div
           className="w-[100%]   max-w-[100%]  leading-snug px-2.5 py-1.5 text-base truncate text-black 
         "
