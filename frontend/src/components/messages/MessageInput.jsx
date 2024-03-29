@@ -44,19 +44,19 @@ const MessageInput = () => {
     if (!inputMessage) return;
     await sendMessage(inputMessage, reply);
     setInputMessage("");
-    setReply("");
+    setReply({ replyingMsg: "", senderId: "" });
   };
 
   return (
     <form
       className={` pb-2 my-0 w-full ${
-        !reply === ""
+        reply.replyingMsg
           ? "backdrop-blur-md sm:bg-gray-500/70 bg-gray-500/30  backdrop-filter bg-opacity-0"
-          : " bg-transparent"
+          : ""
       } `}
       onSubmit={handleSubmit}
     >
-      {!reply === "" && (
+      {reply.replyingMsg && (
         <div
           className="w-[100%]   max-w-[100%]  leading-snug px-2.5 py-1.5 text-base truncate text-black 
         "
@@ -68,12 +68,12 @@ const MessageInput = () => {
             </p>
             <p
               className=" rounded-full text-black text-lg cursor-pointer"
-              onClick={() => setReply("")}
+              onClick={() => setReply({ replyingMsg: "", senderId: "" })}
             >
               <MdClose />
             </p>
           </div>
-          {reply}
+          {reply.replyingMsg}
         </div>
       )}
       <div className="flex flex-col w-full px-2">

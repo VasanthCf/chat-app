@@ -3,11 +3,10 @@ import useGetMessages from "../../hooks/useGetMessages";
 import MessageSkeleton from "../skeletons/MessageSkeleton";
 import Message from "./Message";
 import useListenMessage from "../../hooks/useListenMessage";
-import useConversation from "../../zustand/useConversation";
 
 const Messages = () => {
   const { messages, loading } = useGetMessages();
-  const { optionBlur, setOptionBlur } = useConversation();
+
   useListenMessage();
   const lastMsgRef = useRef(null);
   useEffect(() => {
@@ -17,16 +16,7 @@ const Messages = () => {
   }, [messages]);
 
   return (
-    <div className="px-1 flex-1 overflow-auto">
-      {optionBlur !== null && (
-        <div
-          className="bg-gray-800/30 bg-opacity-0 absolute inset-0 z-10"
-          onClick={() => setOptionBlur(null)}
-        >
-          {" "}
-        </div>
-      )}
-
+    <div className="px-1 flex-1 overflow-auto ">
       {!loading &&
         messages.length > 0 &&
         messages.map((item, i) => (

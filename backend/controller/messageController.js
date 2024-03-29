@@ -25,7 +25,10 @@ export const sendMessage = async (req, res) => {
         receiverId,
         senderId,
         message,
-        replyMsg: reply,
+        replied: {
+          replyMsg: reply.replyingMsg,
+          senderId: reply.senderId,
+        },
       };
     }
 

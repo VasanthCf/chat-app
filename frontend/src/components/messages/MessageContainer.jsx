@@ -7,7 +7,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { useMobileContext } from "../../context/MobileContext";
 
 const MessageContainer = () => {
-  const { isTyping, selectedConversation, setReply } = useConversation();
+  const { selectedConversation, isTyping, setReply } = useConversation();
   const { setIsMobile } = useMobileContext();
   // useEffect(() => {
   //   return () => setSelectedConversation(null);
@@ -24,7 +24,7 @@ const MessageContainer = () => {
               className="p-2 text-lg text-white rounded-full cursor-pointer"
               onClick={() => {
                 setIsMobile(false);
-                setReply("");
+                setReply({ replyingMsg: "", senderId: "" });
               }}
             >
               <FaArrowLeft />
@@ -40,7 +40,7 @@ const MessageContainer = () => {
 
           <Messages />
           {isTyping && (
-            <div className="flex gap-2 ml-4 mb-2">
+            <div className="flex gap-2 ml-4 mb-2 absolute bottom-12">
               <div className="w-8 rounded-full">
                 <img src={selectedConversation.profilePic} />
               </div>

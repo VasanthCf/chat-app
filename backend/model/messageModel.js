@@ -16,9 +16,15 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    replyMsg: {
-      type: String,
-      default: "",
+    replied: {
+      replyMsg: {
+        type: String,
+        default: "",
+      },
+      senderId: {
+        type: String,
+        default: "",
+      },
     },
   },
   { timestamps: true }

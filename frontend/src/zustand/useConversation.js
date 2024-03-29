@@ -8,7 +8,10 @@ const useConversation = create((set) => ({
   setMessages: (messages) => set({ messages }),
   isTyping: false,
   setIsTyping: (isTyping) => set({ isTyping }),
-  reply: "",
+  reply: {
+    replyingMsg: "",
+    senderId: "",
+  },
   setReply: (reply) => set({ reply }),
   inputMessage: "",
   setInputMessage: (inputMessage) => set({ inputMessage }),
