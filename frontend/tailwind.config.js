@@ -7,6 +7,9 @@ export default {
         cat: ["Catamaran", "sans-serif"],
         pacific: ["Pacifico", "cursive"],
       },
+      colors: {
+        darkBlue: "#030637",
+      },
     },
   },
   // eslint-disable-next-line no-undef

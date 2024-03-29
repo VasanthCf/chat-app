@@ -8,6 +8,12 @@ const useConversation = create((set) => ({
   setMessages: (messages) => set({ messages }),
   isTyping: false,
   setIsTyping: (isTyping) => set({ isTyping }),
+  reply: "",
+  setReply: (reply) => set({ reply }),
+  inputMessage: "",
+  setInputMessage: (inputMessage) => set({ inputMessage }),
+  optionBlur: null,
+  setOptionBlur: (optionBlur) => set({ optionBlur }),
 }));
 
 export default useConversation;

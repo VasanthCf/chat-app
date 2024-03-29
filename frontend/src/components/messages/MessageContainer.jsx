@@ -5,8 +5,9 @@ import { TiMessages } from "react-icons/ti";
 import { useAuthContext } from "../../context/AuthContext";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useMobileContext } from "../../context/MobileContext";
+
 const MessageContainer = () => {
-  const { isTyping, selectedConversation } = useConversation();
+  const { isTyping, selectedConversation, setReply } = useConversation();
   const { setIsMobile } = useMobileContext();
   // useEffect(() => {
   //   return () => setSelectedConversation(null);
@@ -18,12 +19,13 @@ const MessageContainer = () => {
         <NoChatSelected />
       ) : (
         <>
-          {/* Header */}
-
           <div className="bg-slate-800 flex items-center gap-2 justify-start px-4 py-2 mb-0">
             <span
               className="p-2 text-lg text-white rounded-full cursor-pointer"
-              onClick={() => setIsMobile(false)}
+              onClick={() => {
+                setIsMobile(false);
+                setReply("");
+              }}
             >
               <FaArrowLeft />
             </span>
