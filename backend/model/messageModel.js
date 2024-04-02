@@ -26,6 +26,19 @@ const messageSchema = new mongoose.Schema(
         default: "",
       },
     },
+    like: {
+      type: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          likeEmoji: {
+            type: String,
+            default: "",
+          },
+        },
+      ],
+      default: [],
+    },
+    likeAnimated: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

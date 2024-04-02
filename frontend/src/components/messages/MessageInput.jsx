@@ -1,11 +1,10 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { BsSend } from "react-icons/bs";
 import useSendMessage from "../../hooks/useSendMessage";
 import { useSocketContext } from "./../../context/SocketContext";
 import useListenTyping from "./../../hooks/useListenTyping";
 import useConversation from "../../zustand/useConversation";
 import useAutosizeTextArea from "../../hooks/useAutoSizeTextArea";
-
 import { MdClose } from "react-icons/md";
 import { useAuthContext } from "../../context/AuthContext";
 
@@ -16,12 +15,12 @@ const MessageInput = () => {
   const { socket } = useSocketContext();
   const {
     selectedConversation,
-    setInputMessage,
+
     inputMessage,
     reply,
     setReply,
   } = useConversation();
-
+  const [localInput, setLocalInput] = useState("");
   const fromMe = reply?.senderId === authUser._id || false;
   const whoReplies = fromMe ? "You" : selectedConversation?.fullName;
   useListenTyping();
@@ -41,9 +40,10 @@ const MessageInput = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!inputMessage) return;
-    await sendMessage(inputMessage, reply);
-    setInputMessage("");
+
+    if (!localInput) return;
+    await sendMessage(localInput, reply);
+    setLocalInput("");
     setReply({ replyingMsg: "", senderId: "" });
   };
 
@@ -51,20 +51,17 @@ const MessageInput = () => {
     <form
       className={` pb-2 my-0 w-full ${
         reply.replyingMsg
-          ? "backdrop-blur-md sm:bg-gray-500/70 bg-gray-500/30  backdrop-filter bg-opacity-0"
+          ? "backdrop-blur-md sm:bg-gray-500/70 bg-gray-500/30  backdrop-filter"
           : ""
       } `}
       onSubmit={handleSubmit}
     >
       {reply.replyingMsg && (
-        <div
-          className="w-[100%]   max-w-[100%]  leading-snug px-2.5 py-1.5 text-base truncate text-black 
-        "
-        >
-          <div className="flex justify-between ">
+        <div className="w-[100%]  max-w-[100%] leading-snug px-2.5 py-1.5 text-base truncate text-black">
+          <div className="flex justify-between">
             {" "}
             <p className="text-[14px] text-gray-700 font-bold">
-              Replying to <span className=" font-pacific  ">{whoReplies} </span>
+              Replying to <span className="font-pacific">{whoReplies} </span>
             </p>
             <p
               className=" rounded-full text-black text-lg cursor-pointer"
@@ -77,14 +74,14 @@ const MessageInput = () => {
         </div>
       )}
       <div className="flex flex-col w-full px-2">
-        <div className=" pl-2 w-full h-full  relative bg-slate-800 border-gray-600  flex rounded-lg items-center  gap-1">
+        <div className=" pl-3 w-full h-full  relative bg-slate-800 border-gray-600  flex rounded-full items-center  gap-1">
           <textarea
             ref={inputRef}
-            className={`border-none block  pt-1.5 pb-1 resize-none flex-1 bg-transparent  min-h-10 text-white outline-none`}
+            className={`border-none block  pt-2.5 pb-1 resize-none flex-1 bg-transparent  min-h-12 text-white outline-none`}
             placeholder="Send a message"
-            value={inputMessage}
+            value={localInput}
             onChange={(e) => {
-              setInputMessage(e.target.value);
+              setLocalInput(e.target.value);
             }}
             onFocus={handleFocus}
             onBlur={handleBlur}

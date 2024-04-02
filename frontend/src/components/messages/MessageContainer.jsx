@@ -33,18 +33,18 @@ const MessageContainer = () => {
               {" "}
               <img src={profilePic} />
             </div>
-            <span className="text-white text-lg  font-pacific leading-loose">
+            <span className="text-white text-lg font-pacific leading-loose">
               {selectedConversation.fullName}
             </span>
           </div>
 
           <Messages />
           {isTyping && (
-            <div className="flex gap-2 ml-4 mb-2 absolute bottom-12">
-              <div className="w-8 rounded-full">
+            <div className=" bg-gray-400/70   backdrop-blur-3xl px-2 py-1 rounded-full flex gap-2 ml-4  absolute bottom-12  bg-clip-padding backdrop-filter">
+              <div className="w-7 rounded-full">
                 <img src={selectedConversation.profilePic} />
               </div>
-              <p className="flex  bg-gray-800 justify-center items-center rounded-full h-8 w-14 ">
+              <p className="flex  bg-gray-800 justify-center items-center rounded-full h-7 w-12 ">
                 <span className=" text-gray-400 loading loading-dots loading-md"></span>
               </p>
             </div>

@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { app, server } from "./socket/socket.js";
 import path from "path";
+
 dotenv.config();
 const url = process.env.MONGO_URL;
 
@@ -26,11 +27,12 @@ app.get("*", (req, res) => {
 });
 mongoose
   .connect(url)
-  .then(() => {
+  .then(async () => {
     server.listen(port, () => {
       console.log("app is running successfully");
     });
   })
+
   .catch((err) => {
     console.log(err);
   });

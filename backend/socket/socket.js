@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import Message from "./../model/messageModel.js";
 const app = express();
 
 const server = http.createServer(app);
@@ -28,6 +29,15 @@ io.on("connection", (socket) => {
       isTyping: data.isTyping,
       id: data.receiverId,
     });
+  });
+
+  socket.on("animateDone", async (data) => {
+    const message = await Message.findById(data, "likeAnimated", { new: true });
+    if (message) {
+      message.likeAnimated = !message.likeAnimated;
+      await message.save();
+    }
+    if (!message) return;
   });
   socket.on("disconnect", () => {
     delete userSocketMap[userId];

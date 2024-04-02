@@ -71,3 +71,44 @@ export const getMessage = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const postLike = async (req, res) => {
+  try {
+    const messageId = req.params.id;
+    const { likeIcon, receiverId } = req.body;
+    const userId = req.user._id;
+
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    const likedIndex = message.like.findIndex(
+      (like) => like.userId.toString() === userId.toString()
+    );
+    if (likedIndex !== -1) {
+      // If user already liked the message, remove the like
+      message.like.splice(likedIndex, 1);
+    } else {
+      // If user hasn't liked the message, add the like
+      message.like.push({ userId, likeEmoji: likeIcon });
+    }
+
+    // Save the updated message
+    await message.save();
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      //SEND MESSAGE TO SPECIFIC CLIENT
+      io.to(receiverSocketId).emit("newLike", { message, receiverId });
+    }
+    // Respond with the updated message
+    res.json({ message });
+
+    // Save the updated message
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
