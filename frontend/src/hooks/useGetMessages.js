@@ -9,7 +9,9 @@ const useGetMessages = () => {
     const getMessage = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/message/${selectedConversation._id}`);
+        const res = await fetch(
+          `/api/message/${selectedConversation.participants[0]._id}`
+        );
 
         const data = await res.json();
 
@@ -24,8 +26,8 @@ const useGetMessages = () => {
         setLoading(false);
       }
     };
-    if (selectedConversation?._id) getMessage();
-  }, [selectedConversation?._id, setMessages]);
+    if (selectedConversation?.participants[0]._id) getMessage();
+  }, [selectedConversation?.participants, setMessages]);
 
   return { messages, loading };
 };

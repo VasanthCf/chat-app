@@ -6,7 +6,7 @@ import userRouter from "./routes/userRoutes.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { app, server } from "./socket/socket.js";
-import path from "path";
+import Conversation from "./model/conversationModel.js";
 
 dotenv.config();
 const url = process.env.MONGO_URL;

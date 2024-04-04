@@ -1,12 +1,13 @@
 import useGetConversation from "../../hooks/useGetConversation";
 import { getRandomEmoji } from "../../utils/emoji";
+
 import Conversation from "./Conversation";
 
 const Conversations = () => {
   const { loading, conversation } = useGetConversation();
 
   return (
-    <div className="py-2 sm:w-auto w-[95%] flex flex-col overflow-auto">
+    <div className="py-2  w-[95%] flex flex-col overflow-auto">
       {loading ? (
         <span className="loading loading-spinner mx-auto"></span>
       ) : null}

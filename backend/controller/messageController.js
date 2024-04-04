@@ -17,6 +17,10 @@ export const sendMessage = async (req, res) => {
     if (!conversation) {
       conversation = await Conversation.create({
         participants: [senderId, receiverId],
+        lastMessage: {
+          text: message,
+          sender: senderId,
+        },
       });
     }
     let messageObj = { receiverId, senderId, message };
@@ -37,13 +41,18 @@ export const sendMessage = async (req, res) => {
     if (newMessage) {
       conversation.messages.push(newMessage._id);
     }
+    conversation.lastMessage = { text: message, sender: senderId };
 
     await conversation.save();
 
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       //SEND MESSAGE TO SPECIFIC CLIENT
-      io.to(receiverSocketId).emit("newMessage", newMessage);
+      io.to(receiverSocketId).emit("newMessage", {
+        newMessage,
+        receiverId,
+        senderId,
+      });
     }
 
     res.status(201).json(newMessage);
@@ -107,6 +116,63 @@ export const postLike = async (req, res) => {
     res.json({ message });
 
     // Save the updated message
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getConversation = async (req, res) => {
+  try {
+    const user = req.user._id;
+
+    const conversations = await Conversation.find(
+      { participants: user },
+      "-messages"
+    ).populate({
+      path: "participants",
+      select: "fullName profilePic",
+    });
+
+    res.status(200).json({ conversations });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getStartChat = async (req, res) => {
+  try {
+    const { id: receiverId } = req.params;
+
+    const senderId = req.user._id;
+
+    let conversation = await Conversation.findOne({
+      participants: { $all: [senderId, receiverId] },
+    });
+
+    if (!conversation) {
+      await Conversation.create({
+        participants: [senderId, receiverId],
+      });
+    }
+
+    const conversations = await Conversation.find(
+      { participants: senderId },
+      "-messages"
+    ).populate({
+      path: "participants",
+      select: "fullName profilePic",
+    });
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      //SEND MESSAGE TO SPECIFIC CLIENT
+      io.to(receiverSocketId).emit("startConv", "msg");
+    }
+
+    res.status(200).json({ conversations });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Internal server error" });

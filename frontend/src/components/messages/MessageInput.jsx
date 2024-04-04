@@ -7,41 +7,47 @@ import useConversation from "../../zustand/useConversation";
 import useAutosizeTextArea from "../../hooks/useAutoSizeTextArea";
 import { MdClose } from "react-icons/md";
 import { useAuthContext } from "../../context/AuthContext";
+import { findParticipant } from "../../utils/findParticipant";
 
 const MessageInput = () => {
   const inputRef = useRef(null);
   const { authUser } = useAuthContext();
   const { loading, sendMessage } = useSendMessage();
   const { socket } = useSocketContext();
-  const {
-    selectedConversation,
-
-    inputMessage,
-    reply,
-    setReply,
-  } = useConversation();
+  const { selectedConversation, reply, setReply } = useConversation();
   const [localInput, setLocalInput] = useState("");
   const fromMe = reply?.senderId === authUser._id || false;
-  const whoReplies = fromMe ? "You" : selectedConversation?.fullName;
+
+  let findReceiver = "";
+
+  findReceiver =
+    findParticipant(selectedConversation, authUser._id) === 1
+      ? selectedConversation?.participants[0]
+      : selectedConversation?.participants[1];
+
+  const whoReplies = fromMe ? "You" : findReceiver.fullName;
   useListenTyping();
-  useAutosizeTextArea(inputRef.current, inputMessage);
+  useAutosizeTextArea(inputRef.current, localInput);
   const handleFocus = () => {
     socket.emit("sendTyping", {
       isTyping: true,
-      receiverId: selectedConversation._id,
+      senderId: authUser._id,
+      receiverId: findReceiver._id,
     });
   };
 
   const handleBlur = () => {
     socket.emit("sendTyping", {
       isTyping: false,
-      receiverId: selectedConversation._id,
+      senderId: authUser._id,
+      receiverId: findReceiver._id,
     });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!localInput) return;
+
     await sendMessage(localInput, reply);
     setLocalInput("");
     setReply({ replyingMsg: "", senderId: "" });
@@ -49,7 +55,7 @@ const MessageInput = () => {
 
   return (
     <form
-      className={` pb-2 my-0 w-full ${
+      className={`transition-all ease-in duration-300 pb-2 my-0 w-full ${
         reply.replyingMsg
           ? "backdrop-blur-md sm:bg-gray-500/70 bg-gray-500/30  backdrop-filter"
           : ""
@@ -100,7 +106,7 @@ const MessageInput = () => {
 
           <button
             type="submit"
-            className=" w-10 h-full rounded-full flex items-center  justify-center text-white"
+            className=" w-10  h-10 rounded-full flex items-center bg-green-400  justify-center text-white text-xl"
             disabled={loading}
           >
             {loading ? (

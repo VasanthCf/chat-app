@@ -1,17 +1,33 @@
+import { useAuthContext } from "../../context/AuthContext";
 import { useMobileContext } from "../../context/MobileContext";
 import { useSocketContext } from "../../context/SocketContext";
+import { findParticipant } from "../../utils/findParticipant";
 import useConversation from "../../zustand/useConversation";
 
 const Conversation = ({ conv, lastIdx, emoji }) => {
   const { selectedConversation, setSelectedConversation } = useConversation();
   const { onlineUsers } = useSocketContext();
   const { setIsMobile } = useMobileContext();
-  const isSelected = selectedConversation?._id === conv._id;
-  const isOnline = onlineUsers.includes(conv._id);
+  const { authUser } = useAuthContext();
+  let findReceiver = "";
+
+  if (selectedConversation) {
+    findReceiver =
+      findParticipant(selectedConversation, authUser._id) === 1
+        ? selectedConversation?.participants[0]
+        : selectedConversation?.participants[1];
+  }
+  let findReceiver1 =
+    findParticipant(conv, authUser._id) === 1
+      ? conv?.participants[0]
+      : conv?.participants[1];
+  const isSelected = findReceiver?._id === findReceiver1?._id;
+  const isOnline = onlineUsers.includes(findReceiver1?._id);
   function handleClick() {
     setSelectedConversation(conv);
     setIsMobile(true);
   }
+
   return (
     <>
       <div
@@ -22,14 +38,20 @@ const Conversation = ({ conv, lastIdx, emoji }) => {
       >
         <div className={`avatar ${isOnline ? "online" : ""}`}>
           <div className="w-12 rounded-full">
-            <img src={conv.profilePic} alt="user avatar" />
+            <img src={findReceiver1?.profilePic} alt="user avatar" />
           </div>
         </div>
 
         <div className="flex flex-col flex-1">
           <div className="flex gap-3 justify-between">
-            <p className="font-bold text-gray-200">{conv.fullName}</p>
+            <p className="font-bold text-gray-200">{findReceiver1?.fullName}</p>
+
             <span className="text-xl">{emoji}</span>
+          </div>
+          <div className="text-gray-200">
+            {conv?.lastMessage?.text.length > 20
+              ? conv?.lastMessage?.text.substring(0, 18) + "..."
+              : conv?.lastMessage?.text}
           </div>
         </div>
       </div>

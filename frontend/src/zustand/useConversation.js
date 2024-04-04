@@ -6,7 +6,7 @@ const useConversation = create((set) => ({
     set({ selectedConversation }),
   messages: [],
   setMessages: (messages) => set({ messages }),
-  isTyping: false,
+  isTyping: "",
   setIsTyping: (isTyping) => set({ isTyping }),
   reply: {
     replyingMsg: "",
@@ -17,6 +17,8 @@ const useConversation = create((set) => ({
   setInputMessage: (inputMessage) => set({ inputMessage }),
   optionBlur: null,
   setOptionBlur: (optionBlur) => set({ optionBlur }),
+  globalLoading: false,
+  setGlobalLoading: (globalLoading) => set({ globalLoading }),
 }));
 
 export default useConversation;

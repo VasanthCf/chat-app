@@ -6,15 +6,24 @@ import useConversation from "../../zustand/useConversation";
 import { useEffect, useState } from "react";
 import { motion, useMotionValue } from "framer-motion";
 import usePostLike from "../../hooks/usePostLike";
-import ReplyButtons from "./ReplyButtons";
+
 import RepliedMessage from "./RepliedMessage";
+import { findParticipant } from "./../../utils/findParticipant";
+import { MdClose } from "react-icons/md";
+import { HiReply } from "react-icons/hi";
 function Message({ message }) {
   const x = useMotionValue(0);
   const [like, setLike] = useState([]);
   const { authUser } = useAuthContext();
   const { selectedConversation, setReply, setOptionBlur, optionBlur } =
     useConversation();
-
+  let findReceiver = "";
+  if (selectedConversation) {
+    findReceiver =
+      findParticipant(selectedConversation, authUser._id) === 1
+        ? selectedConversation?.participants[0]
+        : selectedConversation?.participants[1];
+  }
   useEffect(() => {
     if (message.like.length !== 0) {
       const likeEmojis = message.like.map((likeObj) => likeObj.likeEmoji);
@@ -32,7 +41,7 @@ function Message({ message }) {
     setLike((prev) => [...prev, value]);
     setOptionBlur(null);
 
-    await postLike(value, message._id, selectedConversation._id);
+    await postLike(value, message._id, findReceiver._id);
   };
   const handleSetReply = () => {
     setReply({ replyingMsg: message.message, senderId: message.senderId });
@@ -49,13 +58,9 @@ function Message({ message }) {
   const fromMe = message.senderId === authUser._id;
   const chatClassName = fromMe ? "chat-end" : "chat-start";
   const formattedTime = extractTime(message.createdAt);
-  const profilePic = fromMe
-    ? authUser.profilePic
-    : selectedConversation.profilePic;
+  const profilePic = fromMe ? authUser.profilePic : findReceiver.profilePic;
   const whoReplied =
-    message.replied.senderId === authUser._id
-      ? "You"
-      : selectedConversation?.fullName;
+    message.replied.senderId === authUser._id ? "You" : findReceiver.fullName;
 
   const bubbleBgColor = fromMe
     ? "bg-gradient-to-b from-purple-500 bg-violet-500"
@@ -147,13 +152,66 @@ function Message({ message }) {
             </div>
           )}
           {replyDialogue && (
-            <ReplyButtons
-              fromMe={fromMe}
-              handleSetLike={handleSetLike}
-              handleSetReply={handleSetReply}
-              setOptionBlur={setOptionBlur}
-              formattedTime={formattedTime}
-            />
+            <div
+              className={`absolute bg-gray-800 min-h-16 w-max px-2 py-1 rounded-lg z-50 min-w-28 ${
+                fromMe ? "end-10 inset-y-5" : "start-10 inset-y-5"
+              }`}
+            >
+              <div
+                className={`absolute ${
+                  fromMe ? "right-0" : "left-0"
+                } -top-14 px-2 py-1 rounded-full bg-gray-800 space-x-2 w-40 text-center sm:text-xl text-2xl`}
+              >
+                <span
+                  className="cursor-pointer"
+                  onClick={() => handleSetLike("😂")}
+                >
+                  😂
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => handleSetLike("😅")}
+                >
+                  😅
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => handleSetLike("❤️")}
+                >
+                  ❤️
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => handleSetLike("😤")}
+                >
+                  😤
+                </span>
+              </div>
+              <ul className="text-lg px-2 text-right relative  ">
+                {" "}
+                <li className="flex">
+                  {" "}
+                  <span className="text-xs text-gray-300">
+                    {formattedTime}
+                  </span>{" "}
+                  <span
+                    className="absolute text-red-400 cursor-pointer top-0 right-0"
+                    onClick={() => setOptionBlur(null)}
+                  >
+                    <MdClose />
+                  </span>
+                </li>
+                <li
+                  className="flex mt-2 justify-start gap-2 items-center cursor-pointer"
+                  onClick={() => handleSetReply()}
+                >
+                  Reply{" "}
+                  <span>
+                    <HiReply />{" "}
+                  </span>
+                </li>
+              </ul>
+            </div>
           )}
         </motion.div>
         <div

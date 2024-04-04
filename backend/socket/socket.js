@@ -27,7 +27,8 @@ io.on("connection", (socket) => {
   socket.on("sendTyping", (data) => {
     io.to(getReceiverSocketId(data.receiverId)).emit("isTyping", {
       isTyping: data.isTyping,
-      id: data.receiverId,
+      receiverId: data.receiverId,
+      senderId: data.senderId,
     });
   });
 

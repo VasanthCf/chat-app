@@ -21,18 +21,21 @@ const SearchInput = () => {
     );
 
     if (conversationFound) {
-      setSelectedConversation(conversationFound);
+      // setSelectedConversation(conversationFound);
       setSearch("");
     } else {
       toast.error("No User Found!");
     }
   };
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center gap-2 px-2 mb-2 w-full"
+    >
       <input
         type="text"
         placeholder="Search…"
-        className="input input-bordered rounded-full"
+        className="input input-bordered flex-1 rounded-full"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />

@@ -1,3 +1,4 @@
+import Conversation from "../model/conversationModel.js";
 import User from "../model/userModel.js";
 
 export const getUserSideBar = async (req, res) => {
@@ -6,6 +7,7 @@ export const getUserSideBar = async (req, res) => {
     const allUser = await User.find({ _id: { $ne: loggedInUserId } }).select(
       "-password"
     );
+
     res.status(200).json(allUser);
   } catch (err) {
     console.log(err);
