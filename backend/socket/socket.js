@@ -40,6 +40,14 @@ io.on("connection", (socket) => {
     }
     if (!message) return;
   });
+  // socket.on("markSeen",async(data)=>{
+  //   try{
+  //     await Message.updateMany({receiverId:data.receiverId,senderId:data.senderId})
+
+  //   }catch(err){
+  //     console.log(err.message)
+  //   }
+  // });
   socket.on("disconnect", () => {
     delete userSocketMap[userId];
     io.emit("getOnlineUsers", Object.keys(userSocketMap));

@@ -4,55 +4,50 @@ import MessageSkeleton from "../skeletons/MessageSkeleton";
 import Message from "./Message";
 import useListenMessage from "../../hooks/useListenMessage";
 import useListenLike from "../../hooks/useListenLike";
-import { AnimatePresence, motion } from "framer-motion";
+// import { useAuthContext } from "../../context/AuthContext";
+// import { useSocketContext } from "../../context/SocketContext";
+// import useConversation from "../../zustand/useConversation";
 
 const Messages = () => {
   const { messages, loading } = useGetMessages();
+  // const { authUser } = useAuthContext();
+  // const { socket } = useSocketContext();
+  // const { selectedReceiver } = useConversation();
 
+  // useEffect(() => {
+  //   const lastMessageFromOtherUser =
+  //     messages && messages[messages.length - 1].senderId !== authUser._id;
+
+  //   if (lastMessageFromOtherUser) {
+  //     socket?.emit("markSeen", {
+  //       senderId: authUser._id,
+  //       receiverId: selectedReceiver._id,
+  //     });
+  //   }
+
+  //   return () => socket?.off("markSeen");
+  // }, [authUser._id, messages, socket, selectedReceiver._id]);
+  const lastRef = useRef();
   useListenMessage();
   useListenLike();
-  const lastMsgRef = useRef(null);
+
   useEffect(() => {
     setTimeout(() => {
-      lastMsgRef.current?.scrollIntoView();
+      lastRef.current?.scrollIntoView();
     }, 50);
   }, [messages]);
 
   return (
     <div
-      className={`px-1 flex-1 overflow-x-hidden overflow-y-auto  transition-all duration-300 ease-in-out pt-3`}
+      className={`px-1 flex-1 h-[50vh] overflow-x-hidden overflow-y-auto transition-all duration-300 ease-in-out pt-3`}
     >
       {!loading &&
-        messages.length > 0 &&
-        messages.map((item, i) => {
-          if (i === messages.length - 1) {
-            return (
-              <AnimatePresence key={i}>
-                <motion.div
-                  ref={lastMsgRef}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{
-                    type: "spring",
-                    damping: 8,
-                    bounce: 3,
-                    stiffness: 150,
-                    delay: 0.2,
-                  }}
-                >
-                  <Message message={item} />
-                </motion.div>
-              </AnimatePresence>
-            );
-          } else {
-            return (
-              <div key={i} ref={lastMsgRef}>
-                <Message message={item} />
-              </div>
-            );
-          }
-        })}
-
+        messages?.length > 0 &&
+        messages?.map((item, i) => (
+          <div key={i} ref={lastRef}>
+            <Message message={item} recent={messages.length - 1 === i} />
+          </div>
+        ))}
       {loading && [...Array(3)].map((_, i) => <MessageSkeleton key={i} />)}
 
       {messages.length === 0 && !loading && (

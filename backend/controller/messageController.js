@@ -66,13 +66,23 @@ export const getMessage = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const senderId = req.user._id;
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1); // Get yesterday's date
 
+    const today = new Date();
     const conversation = await Conversation.findOne({
       participants: { $all: [senderId, userToChatId] },
-    }).populate("messages");
+    }).populate({
+      path: "messages",
+      options: {
+        sort: { createdAt: -1 },
+        limit: 100,
+      },
+    });
 
     if (!conversation) return res.status(200).json([]);
-    const messages = conversation.messages;
+
+    const messages = conversation.messages.reverse();
 
     res.status(200).json(messages);
   } catch (err) {

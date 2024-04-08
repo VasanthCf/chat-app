@@ -7,32 +7,24 @@ import useConversation from "../../zustand/useConversation";
 import useAutosizeTextArea from "../../hooks/useAutoSizeTextArea";
 import { MdClose } from "react-icons/md";
 import { useAuthContext } from "../../context/AuthContext";
-import { findParticipant } from "../../utils/findParticipant";
 
 const MessageInput = () => {
   const inputRef = useRef(null);
   const { authUser } = useAuthContext();
-  const { loading, sendMessage } = useSendMessage();
+  const { sendMessage } = useSendMessage();
   const { socket } = useSocketContext();
-  const { selectedConversation, reply, setReply } = useConversation();
+  const { selectedReceiver, reply, setReply } = useConversation();
   const [localInput, setLocalInput] = useState("");
   const fromMe = reply?.senderId === authUser._id || false;
 
-  let findReceiver = "";
-
-  findReceiver =
-    findParticipant(selectedConversation, authUser._id) === 1
-      ? selectedConversation?.participants[0]
-      : selectedConversation?.participants[1];
-
-  const whoReplies = fromMe ? "You" : findReceiver.fullName;
+  const whoReplies = fromMe ? "You" : selectedReceiver?.fullName;
   useListenTyping();
   useAutosizeTextArea(inputRef.current, localInput);
   const handleFocus = () => {
     socket.emit("sendTyping", {
       isTyping: true,
       senderId: authUser._id,
-      receiverId: findReceiver._id,
+      receiverId: selectedReceiver?._id,
     });
   };
 
@@ -40,7 +32,7 @@ const MessageInput = () => {
     socket.emit("sendTyping", {
       isTyping: false,
       senderId: authUser._id,
-      receiverId: findReceiver._id,
+      receiverId: selectedReceiver?._id,
     });
   };
   const handleSubmit = async (e) => {
@@ -107,13 +99,8 @@ const MessageInput = () => {
           <button
             type="submit"
             className=" w-10  h-10 rounded-full flex items-center bg-green-400  justify-center text-white text-xl"
-            disabled={loading}
           >
-            {loading ? (
-              <span className="loading loading-spinner"></span>
-            ) : (
-              <BsSend />
-            )}
+            <BsSend />
           </button>
         </div>{" "}
       </div>

@@ -1,19 +1,49 @@
-import { useState } from "react";
 import useConversation from "../zustand/useConversation";
 import toast from "react-hot-toast";
 import { findParticipant } from "../utils/findParticipant";
 import { useAuthContext } from "../context/AuthContext";
 
+const generateUniqueId = (flag = "_") =>
+  flag + Math.random().toString(36).substring(2, 9);
+
 function useSendMessage() {
-  const [loading, setLoading] = useState(false);
   const { authUser } = useAuthContext();
-  const { messages, setMessages, selectedConversation } = useConversation();
+  const { messages, setMessages, setGlobalLoading, selectedConversation } =
+    useConversation();
   let findReceiver =
     findParticipant(selectedConversation, authUser._id) === 1
       ? selectedConversation?.participants[0]
       : selectedConversation?.participants[1];
+  const dates = new Date();
+  const formatted = dates.toISOString();
+
   const sendMessage = async (message, reply = "") => {
-    setLoading(true);
+    setGlobalLoading(true);
+    const id = generateUniqueId(message);
+    let replied = {
+      replyMsg: "",
+      senderId: "",
+    };
+    if (reply) {
+      replied = { replyMsg: reply?.replyingMsg, senderId: reply?.senderId };
+    }
+
+    const newMessage = {
+      createdAt: formatted,
+      like: [],
+      likeAnimated: false,
+      message: message,
+      receiverId: findReceiver._id,
+      replied,
+      senderId: authUser._id,
+      updatedAt: "2024-04-08T04:05:14.401Z",
+      __v: 0,
+      _id: id,
+      seen: false,
+    };
+    let temp = [...messages, newMessage];
+
+    setMessages([...messages, newMessage]);
 
     try {
       const res = await fetch(`/api/message/send/${findReceiver._id}`, {
@@ -22,20 +52,21 @@ function useSendMessage() {
         body: JSON.stringify({ message, reply }),
       });
       const data = await res.json();
-
       if (data.error) {
         throw new Error(data.error);
       }
 
-      setMessages([...messages, data]);
+      const findFakeIndex = temp.findIndex((item) => item._id === id);
+      temp[findFakeIndex] = data;
+      setMessages(temp);
     } catch (err) {
       toast.error(err.message);
     } finally {
-      setLoading(false);
+      setGlobalLoading(false);
     }
   };
 
-  return { sendMessage, loading };
+  return { sendMessage };
 }
 
 export default useSendMessage;

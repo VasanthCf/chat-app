@@ -5,26 +5,21 @@ import { findParticipant } from "../../utils/findParticipant";
 import useConversation from "../../zustand/useConversation";
 
 const Conversation = ({ conv, lastIdx, emoji }) => {
-  const { selectedConversation, setSelectedConversation } = useConversation();
+  const { setSelectedConversation, selectedReceiver, setSelectedReceiver } =
+    useConversation();
   const { onlineUsers } = useSocketContext();
   const { setIsMobile } = useMobileContext();
   const { authUser } = useAuthContext();
-  let findReceiver = "";
 
-  if (selectedConversation) {
-    findReceiver =
-      findParticipant(selectedConversation, authUser._id) === 1
-        ? selectedConversation?.participants[0]
-        : selectedConversation?.participants[1];
-  }
   let findReceiver1 =
     findParticipant(conv, authUser._id) === 1
       ? conv?.participants[0]
       : conv?.participants[1];
-  const isSelected = findReceiver?._id === findReceiver1?._id;
+  const isSelected = selectedReceiver?._id === findReceiver1?._id;
   const isOnline = onlineUsers.includes(findReceiver1?._id);
   function handleClick() {
     setSelectedConversation(conv);
+    setSelectedReceiver(findReceiver1);
     setIsMobile(true);
   }
 

@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { app, server } from "./socket/socket.js";
 import path from "path";
+import Message from "./model/messageModel.js";
 
 dotenv.config();
 const url = process.env.MONGO_URL;

@@ -19,6 +19,8 @@ const useConversation = create((set) => ({
   setOptionBlur: (optionBlur) => set({ optionBlur }),
   globalLoading: false,
   setGlobalLoading: (globalLoading) => set({ globalLoading }),
+  selectedReceiver: null,
+  setSelectedReceiver: (selectedReceiver) => set({ selectedReceiver }),
 }));
 
 export default useConversation;
