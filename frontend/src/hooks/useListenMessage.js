@@ -21,7 +21,7 @@ function useListenMessage() {
         selectedConversation.participants,
         data.receiverId
       );
-      console.log(person1, person2, person1 && person2);
+
       if (authUser._id === data.receiverId && person1 && person2) {
         const sound = new Audio(pop);
 

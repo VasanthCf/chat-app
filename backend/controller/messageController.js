@@ -23,7 +23,11 @@ export const sendMessage = async (req, res) => {
         },
       });
     }
-    let messageObj = { receiverId, senderId, message };
+    let messageObj = {
+      receiverId,
+      senderId,
+      message,
+    };
     if (reply) {
       messageObj = {
         receiverId,
@@ -66,10 +70,7 @@ export const getMessage = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const senderId = req.user._id;
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1); // Get yesterday's date
 
-    const today = new Date();
     const conversation = await Conversation.findOne({
       participants: { $all: [senderId, userToChatId] },
     }).populate({

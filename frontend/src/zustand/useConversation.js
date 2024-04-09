@@ -21,6 +21,8 @@ const useConversation = create((set) => ({
   setGlobalLoading: (globalLoading) => set({ globalLoading }),
   selectedReceiver: null,
   setSelectedReceiver: (selectedReceiver) => set({ selectedReceiver }),
+  allConversation: null,
+  setAllConversation: (allConversation) => set({ allConversation }),
 }));
 
 export default useConversation;

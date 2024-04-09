@@ -1,12 +1,15 @@
+import { BsCheckAll } from "react-icons/bs";
 import { useAuthContext } from "../../context/AuthContext";
 import { useMobileContext } from "../../context/MobileContext";
 import { useSocketContext } from "../../context/SocketContext";
+
 import { findParticipant } from "../../utils/findParticipant";
 import useConversation from "../../zustand/useConversation";
 
 const Conversation = ({ conv, lastIdx, emoji }) => {
   const { setSelectedConversation, selectedReceiver, setSelectedReceiver } =
     useConversation();
+
   const { onlineUsers } = useSocketContext();
   const { setIsMobile } = useMobileContext();
   const { authUser } = useAuthContext();
@@ -43,7 +46,20 @@ const Conversation = ({ conv, lastIdx, emoji }) => {
 
             <span className="text-xl">{emoji}</span>
           </div>
-          <div className="text-gray-200">
+          <div className="text-gray-200 flex items-end justify-start">
+            {authUser._id === conv?.lastMessage.sender ? (
+              <span
+                className={`text-xl ${
+                  conv?.lastMessage.seen === true
+                    ? "text-blue-800"
+                    : "text-white"
+                }`}
+              >
+                <BsCheckAll />
+              </span>
+            ) : (
+              ""
+            )}{" "}
             {conv?.lastMessage?.text.length > 20
               ? conv?.lastMessage?.text.substring(0, 18) + "..."
               : conv?.lastMessage?.text}

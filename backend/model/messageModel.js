@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema(
   {
+    img: {
+      type: String,
+      default: "",
+    },
     seen: {
       type: Boolean,
       default: false,

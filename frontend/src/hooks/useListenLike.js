@@ -13,10 +13,13 @@ function useListenLike() {
         const index = messages.findIndex(
           (message) => message._id === data.message._id
         );
+
         if (index !== -1) {
           // Update the message at the found index
+
           const updatedMessages = [...messages];
           updatedMessages[index].like = data.message.like;
+
           setMessages(updatedMessages);
         }
       }

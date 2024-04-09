@@ -2,7 +2,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import useLongPress from "../../hooks/useLongPress";
 import { extractTime } from "../../utils/extractTime";
 import useConversation from "../../zustand/useConversation";
-import { useEffect, useState } from "react";
+
 import { motion, useMotionValue } from "framer-motion";
 import usePostLike from "../../hooks/usePostLike";
 import RepliedMessage from "./RepliedMessage";
@@ -13,7 +13,7 @@ import { LuSendHorizonal } from "react-icons/lu";
 
 function Message({ message, recent }) {
   const x = useMotionValue(0);
-  const [like, setLike] = useState([]);
+
   const { authUser } = useAuthContext();
   const {
     selectedReceiver,
@@ -22,22 +22,17 @@ function Message({ message, recent }) {
     globalLoading,
     optionBlur,
   } = useConversation();
+  let likeEmojis = [];
+  if (message.like?.length) {
+    likeEmojis = message.like?.map((likeObj) => likeObj.likeEmoji);
+  }
 
-  useEffect(() => {
-    if (message.like?.length) {
-      const likeEmojis = message.like?.map((likeObj) => likeObj.likeEmoji);
-      setLike(likeEmojis);
-    }
-  }, [message.like]);
   const { postLike, loading } = usePostLike();
-  // if (recent) {
-  //   console.log(message);
-  // }
+
   // handlersss............................
 
   const handleSetLike = async (value) => {
     if (loading) return;
-    setLike((prev) => [...prev, value]);
     setOptionBlur(null);
 
     await postLike(value, message._id, selectedReceiver._id);
@@ -69,7 +64,7 @@ function Message({ message, recent }) {
     ? "bg-gradient-to-b from-purple-500 bg-violet-500"
     : "bg-blue-500";
   const shakeClass = message.shouldShake ? "shake" : "";
-  const uniqueLikes = [...new Set(like)];
+
   return (
     <div>
       <div
@@ -99,9 +94,8 @@ function Message({ message, recent }) {
           } text-white  break-all leading-snug py-[6px] ${bubbleBgColor} ${shakeClass}`}
           {...longpress}
           onDoubleClick={() => {
-            if (like) {
+            if (likeEmojis) {
               handleSetLike("❤️");
-              setLike([]);
             } else {
               handleSetLike("❤️");
             }
@@ -118,18 +112,25 @@ function Message({ message, recent }) {
           }}
           style={{ x }}
         >
-          {message.message}
-          {
+          {message?.message && message.message}
+          {/* {message?.img && (
+            <div className="avatar">
+              <div className="w-36 rounded-xl">
+                <img src={"./bg.png"} />
+              </div>
+            </div>
+          )} */}
+          {fromMe && (
             <span
-              className={`absolute -bottom-0.5 ${
-                !fromMe ? "left-0" : "right-0"
-              } ${message.seen ? "text-green-500" : "text-gray-200"} `}
+              className={`absolute -bottom-0.5 right-0 ${
+                message.seen ? "text-green-500" : "text-gray-200"
+              } `}
             >
               <BsCheckAll />
             </span>
-          }
+          )}
 
-          {like.length !== 0 && (
+          {likeEmojis.length !== 0 && (
             <div
               className={`flex items-end absolute bg-gray-800 rounded-full px-1 border-2 border-gray-700 text-center z-10  ${
                 !fromMe ? "right-3" : ""
@@ -153,15 +154,13 @@ function Message({ message, recent }) {
                   }}
                   transition={{ duration: 0.6 }}
                 >
-                  {uniqueLikes.map((item) => item)}
+                  {likeEmojis}
                 </motion.p>
               )}
 
-              {message.likeAnimated && (
-                <p> {uniqueLikes.map((item) => item)}</p>
-              )}
-              {like.length === 2 && (
-                <span className="text-xs">{like.length}</span>
+              {message.likeAnimated && <p> {likeEmojis}</p>}
+              {likeEmojis.length === 2 && (
+                <span className="text-xs">{likeEmojis.length}</span>
               )}
             </div>
           )}
@@ -228,6 +227,7 @@ function Message({ message, recent }) {
             </div>
           )}
         </motion.div>
+
         <div
           className={`chat-footer opacity-50 
           text-xs text-white pb-2`}
