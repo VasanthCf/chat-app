@@ -3,7 +3,6 @@ import { useSocketContext } from "../context/SocketContext";
 import useConversation from "./../zustand/useConversation";
 import { useAuthContext } from "../context/AuthContext";
 
-import { checkBothParticipant } from "./../utils/findParticipant";
 import pop from "./../assets/sounds/pop.mp3";
 function useListenMessage() {
   const { socket } = useSocketContext();
@@ -12,21 +11,14 @@ function useListenMessage() {
   useEffect(() => {
     socket?.on("newMessage", (data) => {
       data.newMessage.shouldShake = true;
-
-      const person1 = checkBothParticipant(
-        selectedConversation.participants,
-        data.senderId
-      );
-      const person2 = checkBothParticipant(
-        selectedConversation.participants,
-        data.receiverId
-      );
-
-      if (authUser._id === data.receiverId && person1 && person2) {
+      if (
+        authUser._id === data.receiverId &&
+        selectedConversation._id === data.conversationId
+      ) {
         const sound = new Audio(pop);
 
         sound.play();
-
+        localStorage.setItem("currentMsg", JSON.stringify(data.newMessage));
         setMessages([...messages, data.newMessage]);
       }
     });

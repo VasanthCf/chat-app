@@ -9,7 +9,7 @@ function Home() {
   const { isMobile } = useMobileContext();
   return (
     <div
-      className={` flex h-[100dvh] w-full sm:h-[450px] md:h-[550px] rounded-lg overflow-hidden bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0`}
+      className={` flex h-[100dvh] w-full sm:h-[450px] md:h-[550px] rounded-lg overflow-hidden bg-gray-400 bg-clip-padding backdrop-filter bg-opacity-0`}
       ref={windowRef}
     >
       {(viewWidth >= 786 || !isMobile) && <Sidebar />}

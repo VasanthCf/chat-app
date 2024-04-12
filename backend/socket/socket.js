@@ -26,6 +26,17 @@ io.on("connection", (socket) => {
 
   socket.on("markSeen", async (data) => {
     try {
+      const conv = await Conversation.findOne(
+        {
+          participants: { $all: [data.receiverId, data.senderId] },
+        },
+        "participants lastMessage unreadCounts"
+      );
+
+      const senderIndex = conv.unreadCounts.findIndex(
+        (item) => item.user.toString() === data.senderId.toString()
+      );
+
       await Message.updateMany(
         {
           $or: [
@@ -36,15 +47,9 @@ io.on("connection", (socket) => {
         },
         { $set: { seen: true } }
       );
-
-      const conv = await Conversation.findOneAndUpdate(
-        {
-          participants: { $all: [data.receiverId, data.senderId] },
-        },
-        { $set: { "lastMessage.seen": true } },
-        { new: true }
-      ).select("participants");
-
+      conv.lastMessage.seen = true;
+      conv.unreadCounts[senderIndex].count = 0;
+      await conv.save();
       io.to(getReceiverSocketId(data.receiverId)).emit("messageSeen", {
         conversationId: conv._id,
       });

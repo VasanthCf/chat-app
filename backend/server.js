@@ -7,13 +7,19 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { app, server } from "./socket/socket.js";
 import path from "path";
-
+import { v2 as cloudinary } from "cloudinary";
 dotenv.config();
 const url = process.env.MONGO_URL;
 
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET,
+});
 app.use("/api/auth", authRouter);
 app.use("/api/message", messageRouter);
 app.use("/api/users", userRouter);

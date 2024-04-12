@@ -18,6 +18,12 @@ const useGetMessages = () => {
         if (data.error) {
           throw new Error(data.error);
         }
+        if (data.length !== 0) {
+          localStorage.setItem(
+            "currentMsg",
+            JSON.stringify(data[data.length - 1])
+          );
+        }
 
         setMessages(data);
       } catch (err) {

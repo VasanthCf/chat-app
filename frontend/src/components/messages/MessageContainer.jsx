@@ -5,40 +5,79 @@ import { TiMessages } from "react-icons/ti";
 import { useAuthContext } from "../../context/AuthContext";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useMobileContext } from "../../context/MobileContext";
+import { MdClose } from "react-icons/md";
+import { FaReply } from "react-icons/fa";
 
 const MessageContainer = () => {
-  const { selectedConversation, selectedReceiver, isTyping, setReply } =
-    useConversation();
+  const {
+    selectedConversation,
+    allConversation,
+    selectedReceiver,
+    isTyping,
+    setReply,
+    optionBlur,
+
+    setOptionBlur,
+  } = useConversation();
+
   const { setIsMobile } = useMobileContext();
 
   // useEffect(() => {
   //   return () => setSelectedConversation(null);
   // }, [setSelectedConversation]);
-
+  const handleSetReply = () => {
+    setReply({
+      replyingMsg: optionBlur?.message,
+      senderId: optionBlur?.senderId,
+    });
+    setOptionBlur(null);
+  };
   const profilePic = selectedReceiver?.profilePic || "";
   return (
     <div className="md:min-w-[450px] w-full overflow-y-auto flex flex-col transition-all ease-in duration-300">
-      {!selectedConversation ? (
+      {!allConversation || !selectedConversation ? (
         <NoChatSelected />
       ) : (
         <>
           <div className="bg-slate-800 flex items-center gap-2 justify-start px-4 py-2 mb-0">
-            <span
-              className="p-2 text-lg text-white rounded-full cursor-pointer"
-              onClick={() => {
-                setIsMobile(false);
-                setReply({ replyingMsg: "", senderId: "" });
-              }}
-            >
-              <FaArrowLeft />
-            </span>
-            <div className="w-8 rounded-full cursor-pointer">
-              {" "}
-              <img src={profilePic} />
-            </div>
-            <span className="text-white text-lg font-pacific leading-loose">
-              {selectedReceiver?.fullName}
-            </span>
+            {optionBlur ? (
+              <div className="text-white w-full flex justify-between py-1 items-center">
+                <button
+                  onClick={handleSetReply}
+                  className="flex items-center justify-center text-lg gap-2 font-medium"
+                >
+                  <span>
+                    <FaReply />
+                  </span>{" "}
+                  Reply
+                </button>{" "}
+                <button
+                  onClick={() => setOptionBlur(null)}
+                  className="bg-red-400 p-2 rounded-full text-white"
+                >
+                  <MdClose />
+                </button>
+              </div>
+            ) : (
+              <>
+                <span
+                  className="p-2 text-lg text-white rounded-full cursor-pointer"
+                  onClick={() => {
+                    setIsMobile(false);
+                    setReply({ replyingMsg: "", senderId: "" });
+                  }}
+                >
+                  <FaArrowLeft />
+                </span>
+                <div className="w-8 rounded-full cursor-pointer">
+                  {" "}
+                  <img src={profilePic} />
+                </div>
+                <span className="text-white text-lg font-pacific leading-loose">
+                  {selectedReceiver?.fullName}
+                </span>
+              </>
+            )}
           </div>
 
           <Messages />

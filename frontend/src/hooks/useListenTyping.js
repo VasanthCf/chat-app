@@ -6,9 +6,9 @@ import { checkBothParticipant } from "../utils/findParticipant";
 
 function useListenTyping() {
   const { authUser } = useAuthContext();
-  const { setIsTyping } = useConversation();
+
   const { socket } = useSocketContext();
-  const { selectedConversation } = useConversation();
+  const { selectedConversation, setIsTyping } = useConversation();
 
   useEffect(() => {
     socket?.on("isTyping", (data) => {

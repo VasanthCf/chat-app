@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import toast from "react-hot-toast";
 function usePreviewImage() {
-  const [img, setImg] = useState(null);
+  const [img, setImg] = useState("");
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {

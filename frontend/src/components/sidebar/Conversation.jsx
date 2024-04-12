@@ -5,8 +5,8 @@ import { useSocketContext } from "../../context/SocketContext";
 
 import { findParticipant } from "../../utils/findParticipant";
 import useConversation from "../../zustand/useConversation";
-
-const Conversation = ({ conv, lastIdx, emoji }) => {
+import { IoImageOutline } from "react-icons/io5";
+const Conversation = ({ conv, lastIdx }) => {
   const { setSelectedConversation, selectedReceiver, setSelectedReceiver } =
     useConversation();
 
@@ -26,6 +26,10 @@ const Conversation = ({ conv, lastIdx, emoji }) => {
     setIsMobile(true);
   }
 
+  const receiverNotify = conv?.unreadCounts.filter(
+    (item) => item.user === authUser._id
+  );
+
   return (
     <>
       <div
@@ -40,11 +44,18 @@ const Conversation = ({ conv, lastIdx, emoji }) => {
           </div>
         </div>
 
-        <div className="flex flex-col flex-1">
-          <div className="flex gap-3 justify-between">
+        <div className="flex flex-col flex-1 relative">
+          <div className="flex gap-3 justify-between items-center">
             <p className="font-bold text-gray-200">{findReceiver1?.fullName}</p>
 
-            <span className="text-xl">{emoji}</span>
+            {/* {!receiverNotify && receiverNotify[0]?.count && (
+              <span className="text-xl">{emoji}</span>
+            )} */}
+            {receiverNotify && receiverNotify[0]?.count !== 0 && (
+              <p className=" bg-green-500 p-0.5 px-2 text-sm font-semibold rounded-full border-none ">
+                {receiverNotify[0]?.count}
+              </p>
+            )}
           </div>
           <div className="text-gray-200 flex items-end justify-start">
             {authUser._id === conv?.lastMessage.sender ? (
@@ -59,10 +70,16 @@ const Conversation = ({ conv, lastIdx, emoji }) => {
               </span>
             ) : (
               ""
-            )}{" "}
-            {conv?.lastMessage?.text.length > 20
-              ? conv?.lastMessage?.text.substring(0, 18) + "..."
-              : conv?.lastMessage?.text}
+            )}
+            {conv?.lastMessage?.text ? (
+              conv?.lastMessage?.text?.length > 20 ? (
+                conv?.lastMessage?.text.substring(0, 18) + "..."
+              ) : (
+                conv?.lastMessage?.text
+              )
+            ) : (
+              <IoImageOutline />
+            )}
           </div>
         </div>
       </div>

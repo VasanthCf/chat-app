@@ -23,6 +23,8 @@ const useConversation = create((set) => ({
   setSelectedReceiver: (selectedReceiver) => set({ selectedReceiver }),
   allConversation: null,
   setAllConversation: (allConversation) => set({ allConversation }),
+  currentMessage: null,
+  setCurrentMessage: (currentMessage) => set({ currentMessage }),
 }));
 
 export default useConversation;

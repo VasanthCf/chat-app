@@ -2,10 +2,18 @@ import Conversation from "../model/conversationModel.js";
 import Message from "../model/messageModel.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
 
+import { v2 as cloudinary } from "cloudinary";
+// const newOne = await Conversation.findOneAndUpdate(
+//   {
+//     participants: { $all: [senderId, receiverId] },
+//   },
+//   { $set: { unreadCounts: [{ user: senderId }, { user: receiverId }] } },
+//   { new: true }
+// );
 export const sendMessage = async (req, res) => {
   try {
     const { message, reply } = req.body;
-
+    let { img } = req.body;
     const { id: receiverId } = req.params;
 
     const senderId = req.user._id;
@@ -16,6 +24,7 @@ export const sendMessage = async (req, res) => {
 
     if (!conversation) {
       conversation = await Conversation.create({
+        unreadCounts: [{ user: receiverId }, { user: senderId }],
         participants: [senderId, receiverId],
         lastMessage: {
           text: message,
@@ -23,16 +32,25 @@ export const sendMessage = async (req, res) => {
         },
       });
     }
+
+    if (img) {
+      const uploadResponse = await cloudinary.uploader.upload(img);
+      img = uploadResponse.secure_url;
+    }
+    console.log(img);
+
     let messageObj = {
       receiverId,
       senderId,
       message,
+      img: img || "",
     };
     if (reply) {
       messageObj = {
         receiverId,
         senderId,
         message,
+        img: img || "",
         replied: {
           replyMsg: reply.replyingMsg,
           senderId: reply.senderId,
@@ -45,17 +63,30 @@ export const sendMessage = async (req, res) => {
     if (newMessage) {
       conversation.messages.push(newMessage._id);
     }
+
+    const index = conversation.unreadCounts.findIndex(
+      (item) => item.user.toString() === receiverId.toString()
+    );
+
+    conversation.unreadCounts[index].count += 1;
+
     conversation.lastMessage = { text: message, sender: senderId };
 
-    await conversation.save();
+    const conv2 = await conversation.save();
 
     const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
+    if (receiverSocketId && conv2) {
       //SEND MESSAGE TO SPECIFIC CLIENT
       io.to(receiverSocketId).emit("newMessage", {
         newMessage,
         receiverId,
         senderId,
+        conversationId: conversation._id,
+      });
+      io.to(receiverSocketId).emit("notify", {
+        receiverId,
+        counted: conv2.unreadCounts[index].count,
+        conversationId: conversation._id,
       });
     }
 
@@ -164,12 +195,13 @@ export const getStartChat = async (req, res) => {
 
     if (!conversation) {
       await Conversation.create({
+        unreadCounts: [{ user: receiverId }, { user: senderId }],
         participants: [senderId, receiverId],
       });
     }
 
-    const conversations = await Conversation.find(
-      { participants: senderId },
+    const conversations = await Conversation.findOne(
+      { participants: { $all: [senderId, receiverId] } },
       "-messages"
     ).populate({
       path: "participants",

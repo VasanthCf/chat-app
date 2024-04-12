@@ -17,7 +17,7 @@ function useSendMessage() {
   const dates = new Date();
   const formatted = dates.toISOString();
 
-  const sendMessage = async (message, reply = "") => {
+  const sendMessage = async (message, reply = "", img = "") => {
     setGlobalLoading(true);
     const id = generateUniqueId(message);
     let replied = {
@@ -40,6 +40,7 @@ function useSendMessage() {
       __v: 0,
       _id: id,
       seen: false,
+      img,
     };
     let temp = [...messages, newMessage];
 
@@ -48,8 +49,10 @@ function useSendMessage() {
     try {
       const res = await fetch(`/api/message/send/${findReceiver._id}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, reply }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message, reply, img }),
       });
       const data = await res.json();
       if (data.error) {
@@ -58,6 +61,7 @@ function useSendMessage() {
 
       const findFakeIndex = temp.findIndex((item) => item._id === id);
       temp[findFakeIndex] = data;
+      localStorage.setItem("currentMsg", JSON.stringify(data));
       setMessages(temp);
     } catch (err) {
       toast.error(err.message);
