@@ -11,11 +11,13 @@ import useListenConversation from "../../hooks/useListenConversation";
 const Conversations = () => {
   const { loading } = useGetConversation();
   const { socket } = useSocketContext();
+
   const {
     setAllConversation,
     allConversation: conversation,
     selectedReceiver,
   } = useConversation();
+
   useEffect(() => {
     socket?.on("messageSeen", ({ conversationId }) => {
       const updatedConversation = conversation?.map((item) => {

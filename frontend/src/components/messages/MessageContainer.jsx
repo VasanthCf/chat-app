@@ -16,7 +16,6 @@ const MessageContainer = () => {
     isTyping,
     setReply,
     optionBlur,
-
     setOptionBlur,
   } = useConversation();
 
@@ -27,7 +26,7 @@ const MessageContainer = () => {
   // }, [setSelectedConversation]);
   const handleSetReply = () => {
     setReply({
-      replyingMsg: optionBlur?.message,
+      replyingMsg: optionBlur?.message || optionBlur?.img,
       senderId: optionBlur?.senderId,
     });
     setOptionBlur(null);

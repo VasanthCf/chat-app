@@ -17,8 +17,18 @@ function useSendMessage() {
   const dates = new Date();
   const formatted = dates.toISOString();
 
-  const sendMessage = async (message, reply = "", img = "") => {
+  const sendMessage = async (
+    message,
+    reply = "",
+    img = "",
+    setLocalInput,
+    setImg,
+    setReply
+  ) => {
     setGlobalLoading(true);
+    setLocalInput("");
+    setImg("");
+    setReply({ replyingMsg: "", senderId: "" });
     const id = generateUniqueId(message);
     let replied = {
       replyMsg: "",

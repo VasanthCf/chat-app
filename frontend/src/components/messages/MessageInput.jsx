@@ -9,7 +9,12 @@ import { MdClose } from "react-icons/md";
 import { useAuthContext } from "../../context/AuthContext";
 import { IoCamera, IoSendSharp } from "react-icons/io5";
 import usePreviewImage from "../../hooks/usePreviewImage";
-
+function isURL(str) {
+  // Regular expression for URL pattern
+  const urlPattern =
+    /^(https?:\/\/)?([\w.-]+)(\.[\w]{2,})+([\w\-.~:/?#[\]@!$&'()*+,;=]*)?$/;
+  return urlPattern.test(str);
+}
 const MessageInput = () => {
   const inputRef = useRef(null);
 
@@ -23,6 +28,9 @@ const MessageInput = () => {
   const fromMe = reply?.senderId === authUser._id || false;
   const imgRef = useRef(null);
   const whoReplies = fromMe ? "You" : selectedReceiver?.fullName;
+
+  const isReplyImg = isURL(reply.replyingMsg);
+
   useListenTyping();
   useAutosizeTextArea(inputRef.current, localInput);
   const handleFocus = () => {
@@ -54,15 +62,9 @@ const MessageInput = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (globalLoading) return;
-
     if (!localInput && !img) return;
-    if (!globalLoading) {
-      await sendMessage(localInput, reply, img);
-    }
 
-    setLocalInput("");
-    setImg("");
-    setReply({ replyingMsg: "", senderId: "" });
+    await sendMessage(localInput, reply, img, setLocalInput, setImg, setReply);
   };
 
   return (
@@ -74,13 +76,6 @@ const MessageInput = () => {
       } `}
       onSubmit={handleSubmit}
     >
-      {/* <button
-        className="btn"
-        onClick={() => document.getElementById("my_modal_3").showModal()}
-      >
-        open modal
-      </button> */}
-
       {/* {img && <ImageSend {...{ img, setImg }} />} */}
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box pb-0 bg-gray-700">
@@ -125,7 +120,16 @@ const MessageInput = () => {
               <MdClose />
             </p>
           </div>
-          {reply?.replyingMsg}
+          {isReplyImg ? (
+            <div className="w-14 h-14 ml-2 rounded-lg bg-black">
+              <img
+                src={reply?.replyingMsg}
+                className="w-full h-full object-contain rounded-lg"
+              />
+            </div>
+          ) : (
+            reply?.replyingMsg
+          )}
         </div>
       )}
 

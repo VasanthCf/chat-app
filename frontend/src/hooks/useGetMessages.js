@@ -4,17 +4,14 @@ import toast from "react-hot-toast";
 
 const useGetMessages = () => {
   const [loading, setLoading] = useState(false);
-  const { messages, setMessages, selectedConversation } = useConversation();
+  const { messages, setMessages, selectedReceiver } = useConversation();
+
   useEffect(() => {
     const getMessage = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `/api/message/${selectedConversation.participants[0]._id}`
-        );
-
+        const res = await fetch(`/api/message/${selectedReceiver._id}`);
         const data = await res.json();
-
         if (data.error) {
           throw new Error(data.error);
         }
@@ -24,7 +21,6 @@ const useGetMessages = () => {
             JSON.stringify(data[data.length - 1])
           );
         }
-
         setMessages(data);
       } catch (err) {
         toast.error(err.message);
@@ -32,8 +28,8 @@ const useGetMessages = () => {
         setLoading(false);
       }
     };
-    if (selectedConversation?.participants[0]._id) getMessage();
-  }, [selectedConversation?.participants, setMessages]);
+    if (selectedReceiver._id) getMessage();
+  }, [selectedReceiver._id, setMessages]);
 
   return { messages, loading };
 };

@@ -7,8 +7,12 @@ import { findParticipant } from "../../utils/findParticipant";
 import useConversation from "../../zustand/useConversation";
 import { IoImageOutline } from "react-icons/io5";
 const Conversation = ({ conv, lastIdx }) => {
-  const { setSelectedConversation, selectedReceiver, setSelectedReceiver } =
-    useConversation();
+  const {
+    setSelectedConversation,
+
+    selectedReceiver,
+    setSelectedReceiver,
+  } = useConversation();
 
   const { onlineUsers } = useSocketContext();
   const { setIsMobile } = useMobileContext();
@@ -52,7 +56,7 @@ const Conversation = ({ conv, lastIdx }) => {
               <span className="text-xl">{emoji}</span>
             )} */}
             {receiverNotify && receiverNotify[0]?.count !== 0 && (
-              <p className=" bg-green-500 p-0.5 px-2 text-sm font-semibold rounded-full border-none ">
+              <p className=" bg-green-500 dark:text-black p-0.5 px-2 text-sm font-semibold rounded-full border-none ">
                 {receiverNotify[0]?.count}
               </p>
             )}

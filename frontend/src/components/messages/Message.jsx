@@ -12,6 +12,7 @@ import { LuSendHorizonal } from "react-icons/lu";
 
 import { useRef, useState } from "react";
 import ImageDownload from "./ImageDownload";
+
 function Message({ message, recent }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imgOpen, setImageOpen] = useState(false);
@@ -121,9 +122,9 @@ function Message({ message, recent }) {
         >
           {message?.message && message.message}
           {message?.img && (
-            <div className="avatar">
+            <div className="avatar ">
               <div
-                className="w-36 rounded-xl"
+                className="w-36 rounded-lg"
                 onClick={() => {
                   setSelectedImage(message.img);
                   setImageOpen(true);
@@ -131,9 +132,6 @@ function Message({ message, recent }) {
               >
                 <img src={message.img} alt={message.img} ref={imgRef} />
               </div>
-              {/* <button className="absolute" onClick={() => saveAs(message.img)}>
-                <IoMdDownload />
-              </button> */}
             </div>
           )}
 
