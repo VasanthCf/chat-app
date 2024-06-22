@@ -164,6 +164,12 @@ const MessageInput = () => {
             onFocus={handleFocus}
             onBlur={handleBlur}
             rows={1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault(); // Prevent newline
+                handleSubmit(e); // Submit the form
+              }
+            }}
           />
 
           {/* <input
